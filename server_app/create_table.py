@@ -11,8 +11,8 @@ cursor.execute('''CREATE TABLE predictions (
                     precision FLOAT,
                     recall FLOAT,
                     prediction_speed INTEGER,
-                    requested_at DATETIME NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime')),
-                    submitted_at DATETIME NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'))
+                    requested_at DATETIME NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now', 'utc')),
+                    submitted_at DATETIME NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now', 'utc'))
                     )''')
 conn.commit()
 

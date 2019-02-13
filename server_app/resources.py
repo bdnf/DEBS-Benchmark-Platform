@@ -43,7 +43,7 @@ if current_scene != 0:
 else:
     df = pd.read_csv(in_file, sep=',', header = None, names=['time', 'laser_id', 'X', 'Y', 'Z'], iterator=True)
 #TODO improve global state
-log_filename = 'demo%s.log' % int(datetime.datetime.now().strftime("%s"))
+log_filename = 'demo%s.log' % int(datetime.datetime.utcnow().strftime("%s"))
 # print(log_filename)
 logging.basicConfig(filename='/logs/'+log_filename,
                     level=logging.INFO,
@@ -92,13 +92,13 @@ class Benchmark(Resource):
                 print('trying to get overall result')
                 BenchmarkResults.results(current_scene)
                 logging.warning('Last scene reached. Total time is 0. No more scenes left. Please, check you detailed results now')
-                filename = int(datetime.datetime.now().strftime("%s"))
+                filename = int(datetime.datetime.utcnow().strftime("%s"))
                 os.system('cp debs.db /logs/destination%s.db' % filename)
                 return {'message': 'Last scene reached. No more scenes left. Please, check you detailed results now',
                         'total runtime': 'An error occured when computing total runtime. Please rebuild the Benchmark server'}, 404
             else:
                 logging.warning('Last scene reached. No more scenes left. Please, check you detailed results now')
-                filename = int(datetime.datetime.now().strftime("%s"))
+                filename = int(datetime.datetime.utcnow().strftime("%s"))
                 BenchmarkResults.results(current_scene)
                 logging.info("saving database...")
                 os.system('cp debs.db /logs/destination%s.db' % filename)
@@ -129,7 +129,7 @@ class Benchmark(Resource):
         cursor = conn.cursor()
 
         query = "INSERT INTO predictions (scene, requested_at) VALUES(?,?)"
-        start_time = datetime.datetime.now()
+        start_time = datetime.datetime.utcnow()
         cursor.execute(query, (number, start_time))
         conn.commit()
         conn.close()
@@ -149,7 +149,7 @@ class Benchmark(Resource):
         if not correct_dict:
             return {"message": "Please request at least one scene first"}, 400
         your_dict = request.get_json()
-        submission_time = datetime.datetime.now()
+        submission_time = datetime.datetime.utcnow()
 
         try:
             your_dict = {str(k):int(v) for k,v in your_dict.items()}
@@ -276,10 +276,16 @@ class BenchmarkResults(Resource):
         result = cursor.fetchone()
         conn.close()
 
-        #if (scenes_count != TOTAL_SCENES):
-        accuracy = float(result[0])/TOTAL_SCENES
-        precision = float(result[1])/TOTAL_SCENES
-        recall = float(result[2])/TOTAL_SCENES
+        if result[0]:
+            accuracy = float(result[0])/TOTAL_SCENES
+            precision = float(result[1])/TOTAL_SCENES
+            recall = float(result[2])/TOTAL_SCENES
+        else:
+            print("client failed oon first scene")
+            accuracy = 0
+            precision = 0
+            recall = 0
+            
         logging.info('FINAL_RESULT accuracy:%s' % accuracy)
         logging.info('FINAL_RESULT precision:%s' % precision)
         logging.info('FINAL_RESULT recall:%s' % recall)

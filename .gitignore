@@ -1,0 +1,7 @@
+*.pyc
+*.ipynb
+*.csv
+.ipynb_checkpoints/
+__pycache__
+logs
+*.db
