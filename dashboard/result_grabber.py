@@ -146,11 +146,13 @@ def generate_ranking_table():
     queue = []
     delta = datetime.timedelta(minutes=15)
     time = datetime.datetime.utcnow() + delta
+    marked = 0
     for ix, row in enumerate(result):
        ranking[ix+1] = row
        if row['updated']  == "True":
 
-           queue.append({row['name']: unconvert_time(time + delta*ix)  })
+           queue.append({row['name']: unconvert_time(time + delta*(marked))  })
+           marked +=1
     #print(ranking)
     return ranking, queue
 

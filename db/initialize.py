@@ -1,7 +1,31 @@
 import dataset
 import json
+import pymysql
+import os
 
-db = dataset.connect('sqlite:///teams.db')
+pymysql.install_as_MySQLdb()
+
+host = 'localhost'
+port = 3306
+user = 'dbuser'
+password = 'dbpassword'
+dbase = 'teams'
+path = 'mysql://'+ user +':'+ password + '@'+ host +':' + str(port) + '/' + dbase
+
+psw = os.getenv('MYSQL_ROOT_PASSWORD')
+if not psw:
+    print(path)
+    db = dataset.connect(path)
+else:
+    host = os.getenv('MYSQL_HOST')
+    port = os.getenv('MYSQL_PORT')
+    user = os.getenv('MYSQL_USER')
+    password = os.getenv('MYSQL_ROOT_PASSWORD')
+    dbase = os.getenv('MYSQL_DATABASE')
+
+    path = 'mysql://'+ user +':'+ password + '@'+ host +':' + str(port) + '/' + dbase
+    db = dataset.connect(path)
+
 '''
 schema
 
@@ -25,7 +49,7 @@ table = db['teams']
 
 pick_one = table.find_one(name='TUD')
 
-#table.update(dict(name='TUD', team_image_name='val', updated='False'), ['name'])
+table.update(dict(name='TU Dresden', tag='sha256', scenes=50), ['name'])
 
 pick_one = table.find_one(name='TUM')
 pick_tud = table.find_one(name='TUD')
@@ -38,7 +62,7 @@ teams = db['teams'].all()
 for t in teams:
 #     #print("Teams", t)
 #     #print("name", t['name'])
-    if t['name'] == 'TU Darmstadt':
+    #if t['name'] == 'TU Darmstadt':
         table.update(dict(name=str(t['name']), updated='True'), ['name'])
 #print(json.dumps(pick_tud))
 print("check")

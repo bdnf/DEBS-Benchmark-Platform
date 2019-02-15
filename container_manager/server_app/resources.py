@@ -15,7 +15,8 @@ import threading
 import metrics
 #from watchdog import Watchdog
 import atexit
-
+from create_table import DBCreator
+import time
 in_file = "../dataset/in.csv"
 out_file = "../dataset/out.csv"
 current_scene = 0
@@ -23,8 +24,13 @@ current_scene = 0
 
 if not os.path.isfile(in_file):
     print("in.csv file not found. Please put datafiles in /dataset folder")
-    raise FileNotFoundError()
-    exit(1)
+    #raise FileNotFoundError()
+    #exit(1)
+    #time.sleep(15)
+    pwd = os.getcwd()
+    print("pwd: ", pwd)
+    subprocess.check_output(['cd ..'])
+    subprocess.check_output(['ls dataset/'])
 
 TOTAL_SCENES = int(subprocess.check_output(["tail", "-1", in_file]).decode('ascii').split(",")[0].split('.')[0]) + 1
 try:
@@ -48,6 +54,12 @@ log_filename = 'demo%s.log' % int(datetime.datetime.utcnow().strftime("%s"))
 logging.basicConfig(filename='/logs/'+log_filename,
                     level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s')
+
+DBCreator.create_table()
+subprocess.check_output(['ls'])
+print("init is over")
+sys.stdout.flush()
+
 
 class Watchdog:
 
@@ -285,7 +297,8 @@ class BenchmarkResults(Resource):
             accuracy = 0
             precision = 0
             recall = 0
-            
+
+        #TODO flag extended logging TEAMNAME:HOSTURL(post)
         logging.info('FINAL_RESULT accuracy:%s' % accuracy)
         logging.info('FINAL_RESULT precision:%s' % precision)
         logging.info('FINAL_RESULT recall:%s' % recall)

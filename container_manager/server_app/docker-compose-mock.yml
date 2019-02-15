@@ -8,17 +8,15 @@ services:
     - server
     environment:
       BENCHMARK_SYSTEM_URL: server
-    networks:
-    - bench
+    links:
+    - server
   server:
     build:
-      context: ../
+      context: .
       dockerfile: Dockerfile.server
     container_name: benchmark-server-logging
-    networks:
-    - bench
     restart: always
     volumes:
-    - ../dataset:/dataset
+    - /Users/oleh/Lab/HOBBIT/docker_api_python/container_manager/dataset:/dataset
     - ../logs:/logs
 version: '3'

@@ -1,0 +1,15 @@
+FROM ubuntu:16.04
+
+# install basic dependencies
+RUN apt-get update && apt-get install -y build-essential
+RUN apt-get update && apt-get install -y libtbb-dev
+
+RUN apt-get update && apt-get install -y \
+    python-pip
+
+RUN pip install --no-cache-dir requests dataset pymysql cryptography sqlalchemy
+
+COPY . /app
+WORKDIR /app
+
+CMD ["python", "scheduler.py"]

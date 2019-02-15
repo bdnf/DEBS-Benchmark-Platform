@@ -24,19 +24,19 @@ RUN apt-get update && apt-get install -y \
 
 RUN python3 -V
 # add your dependencies to the list below
-RUN pip3 install --no-cache-dir requests flask docker pyyaml dataset pymysql
+RUN pip3 install --no-cache-dir requests flask docker pyyaml
 
 RUN mkdir app
+WORKDIR /app
 
-#ADD server_app server_app
-#ADD Dockerfile.server .
-#ADD Dockerfile.manager .
-#ADD docker-compose-mock.yml .
-#ADD docker-compose.yml .
-ADD manager.py .
+COPY templates templates
+ADD docker_client.py .
+ADD result_grabber.py .
+ADD teams.txt .
+ADD docker-compose-mock.yml .
 
-#RUN chmod +x /docker-compose-mock.yml
-#RUN chmod +x /docker-compose.yml
+
+VOLUME /manager_data /manager_logs
 
 
 
@@ -44,9 +44,5 @@ ADD manager.py .
 #VOLUME /usr/local/bin/docker /usr/bin/docker
 
 #RUN docker run hello-world
-#
-WORKDIR /server_app
-#VOLUME ./manager_logs /manager_logs
-#VOLUME ../logs /logs
 
-CMD ["python3", "../manager.py"]
+CMD ["python3", "result_grabber.py"]

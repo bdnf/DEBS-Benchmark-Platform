@@ -1,0 +1,74 @@
+version: "3"
+services:
+  db:
+    #image: debs2019challenge/benchmark-server
+    container_name: db_server
+    image: mysql:latest
+    restart: always
+    volumes:
+      - ./dbs:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: the-secret-pw
+      MYSQL_DATABASE: teams
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpassword
+    ports:
+      - '3306:3306'
+    # healthcheck:
+    #   test: ["CMD", "mysqladmin", "ping", "-h", "db:3306"]
+    #   timeout: 5s
+    #   retries: 5
+
+
+  scheduler:
+    container_name: scheduler
+    build:
+      context: ./scheduler
+      dockerfile: Dockerfile.scheduler
+    env_file:
+      - .env
+    depends_on:
+      - db
+    links:
+      - db
+
+  manager:
+    container_name: manager
+    build:
+      context: ./container_manager
+      dockerfile: Dockerfile.manager
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      #- ./container_manager/dataset:/dataset
+      - ./container_manager/server_app:/server_app
+      #- ./logs:/logs
+      - ./container_manager/manager_logs:/server_app/manager_logs
+      - ./container_manager/logs:/logs
+      #- "${DOCKER_PATH}:/usr/bin/docker:ro"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    links:
+      - db
+
+
+  # client:
+  #   container_name: client-app
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.client
+  #   environment:
+  #     BENCHMARK_SYSTEM_URL: 'server'
+  #   volumes:
+  #     - ./dataset:/dataset
+  #   depends_on:
+  #     - server
+  #
+  #   networks:
+  #         - bench
+    #tty: true
+
+
+networks:
+    bench: {}
