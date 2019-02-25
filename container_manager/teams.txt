@@ -1,3 +1,0 @@
-olehbodunov/docker_api_python_client_test
-olehbodunov/dataset-client
-olehbodunov/docker_api_python_client

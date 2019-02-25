@@ -1,0 +1,18 @@
+FROM ubuntu:16.04
+
+# install basic dependencies
+RUN apt-get update && apt-get install -y build-essential
+RUN apt-get update && apt-get install -y libtbb-dev
+
+RUN apt-get update && apt-get install -y \
+    python-pip
+
+RUN pip install --no-cache-dir requests dataset pymysql cryptography sqlalchemy flask flask_restful gunicorn
+RUN pip install --no-cache-dir flask_jwt_extended
+
+COPY . /app
+WORKDIR /app
+
+#CMD ["python", "controller.py"]
+#CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "controller:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "controller:app"]
