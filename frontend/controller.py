@@ -209,9 +209,10 @@ def get_teams():
     logging.info("IP address: %s " % request.remote_addr)
     sys.stdout.flush()
     if request.remote_addr in allowed_hosts:
-        print(" %s is allowed" % request.remote_addr)
+        logging.info(" %s is allowed" % request.remote_addr)
     else:
-        print(" %s is NOT allowed" % request.remote_addr)
+        logging.info(" %s is NOT allowed" % request.remote_addr)
+    sys.stdout.flush()
     images = db.find_images()
     logging.info("sending schedule")
     logging.debug("sending schedule: %s" % images)
