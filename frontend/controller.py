@@ -39,9 +39,9 @@ logging.basicConfig(
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
 CYCLE_TIME = datetime.timedelta(minutes=20)
 skip_columns = ['time_tag']
-scheduler = os.getenv("SCHEDULER_IP")
+
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
-allowed_hosts = [scheduler, remote_manager]
+allowed_hosts = [remote_manager]
 print("Allowed are: ", allowed_hosts)
 
 # --- helper functions ---
@@ -221,8 +221,7 @@ def get_teams():
     #if request.remote_addr in allowed_hosts:
         sys.stdout.flush()
         images = db.find_images()
-        logging.info("sending schedule")
-        logging.debug("sending schedule: %s" % images)
+        logging.info("sending schedule: %s" % images)
         return json.dumps(images)
     #else:
     #    logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
@@ -234,9 +233,6 @@ db = Database('teams')
 
 @app.before_request
 def make_session_permanent():
-    scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
-    allowed_hosts.append(scheduler_ip)
-    logging.info("Allowed hosts are: %s" % allowed_hosts)
     session.permanent = True
     app.permanent_session_lifetime = datetime.timedelta(seconds=30)
     #return render_template('logged_out.html'), 500
@@ -246,6 +242,10 @@ if __name__ == '__main__':
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=40))
     logging.warning("Waiting for DB server to start: %s seconds" % frontend_backoff)
     time.sleep(frontend_backoff)
+    # find scheduler
+    scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
+    allowed_hosts.append(scheduler_ip)
+    logging.info("Allowed hosts are: %s" % allowed_hosts)
 
     # gunicorn -w 4 -b 127.0.0.1:8080 controller:app
     #app.run(host='0.0.0.0', port=8080)
