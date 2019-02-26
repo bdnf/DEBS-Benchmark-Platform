@@ -52,16 +52,10 @@ class Database:
         row = table.find_one(name=team)
         if row:
             print("Found entry", row)
-            if status == "True":
-                table.update(dict(name=team, team_image_name=image, updated=status, last_run=datetime.datetime.utcnow()), ['name'])
-            else:
-                table.update(dict(name=team, team_image_name=image, updated=status), ['name'])
+            table.update(dict(name=team, team_image_name=image, updated=status), ['name'])
         else:
             print("Entry is new")
-            if status == "True":
-                table.insert(dict(name=team, team_image_name=image, updated=status, last_run=datetime.datetime.utcnow()), ['name'])
-            else:
-                table.insert(dict(name=team, team_image_name=image, updated=status))
+            table.insert(dict(name=team, team_image_name=image, updated=status))
         sys.stdout.flush()
 
     def update_image(self, image_name, timestamp):
@@ -144,7 +138,7 @@ class Database:
                 max_runtime = row['runtime']
 
             return ranking, last_experiment_time, max_runtime
-            
+
         except (pymysql.ProgrammingError, pymysql.err.ProgrammingError):
             print("If this is the first run make sure that DB is initialized")
             return [], "", 0
