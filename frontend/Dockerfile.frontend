@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y python3.7
 RUN apt-get update && apt-get install -y build-essential libssl-dev libffi-dev python3-dev
 RUN apt-get update && apt-get install -y libtbb-dev
 
+RUN apt-get update && apt-get install curl -y
 RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
 RUN python3 get-pip.py
 RUN pip --version
