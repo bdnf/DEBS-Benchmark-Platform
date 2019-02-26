@@ -14,7 +14,7 @@ from flask_jwt_extended import (
             create_access_token, create_refresh_token, get_jwt_identity, jwt_required, decode_token
 )
 
-from security import authenticate
+from security import authenticate, find_container_ip_addr
 from database_access_object import Database
 
 app = Flask(__name__)
@@ -35,13 +35,16 @@ logging.basicConfig(
                      logging.StreamHandler()
                     ])
 
-# constants
+# --- constants ---
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
 CYCLE_TIME = datetime.timedelta(minutes=20)
 skip_columns = ['time_tag']
+this_server = os.getenv("FRONTEND_SERVER")
+remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
+allowed_hosts = [this_server, remote_manager, 'scheduler']
+print("Allowed are: ", allowed_hosts)
 
-
-# helper functions
+# --- helper functions ---
 def update_waiting_time(seconds):
     global DELTA
     if seconds >= 60:  # minimum waiting time in minutes
@@ -49,7 +52,7 @@ def update_waiting_time(seconds):
 
 
 def filter(row):
-    #specify here which columns not to be shown
+    # specify in @skip_columns which columns not to be shown
     new_row = {}
     for k,v in row.items():
         if k in skip_columns:
@@ -203,10 +206,18 @@ def post_schedule():
 
 @app.route('/schedule', methods=['GET'])
 def get_teams():
+    logging.info("IP address: %s " % request.remote_addr)
+    sys.stdout.flush()
+    if request.remote_addr in allowed_hosts:
+        print(" %s is allowed" % request.remote_addr)
+    else:
+        print(" %s is NOT allowed" % request.remote_addr)
     images = db.find_images()
     logging.info("sending schedule")
     logging.debug("sending schedule: %s" % images)
     return json.dumps(images)
+    #else:
+        #return render_template('404.html'), 404
 
 
 db = Database('teams')
