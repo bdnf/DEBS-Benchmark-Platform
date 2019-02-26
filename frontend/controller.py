@@ -38,7 +38,7 @@ logging.basicConfig(
 # --- constants ---
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
 CYCLE_TIME = datetime.timedelta(minutes=20)
-skip_columns = ['time_tag']
+skip_columns = ['']
 
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
 allowed_hosts = [remote_manager]
