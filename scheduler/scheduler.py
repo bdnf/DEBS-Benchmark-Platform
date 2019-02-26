@@ -118,7 +118,7 @@ if __name__ == '__main__':
     while(True):
         scheduler.run()
         updated_images = {}
-        logging.info("Schedulers items are: ", scheduler.schedule.items())
+        logging.info("Schedulers items are: %s" % scheduler.schedule)
         if scheduler.updated_status:
             for image, status in scheduler.schedule.items():
                     if status == 'updated':

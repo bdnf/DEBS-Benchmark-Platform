@@ -25,7 +25,7 @@
       <td scope="row">{{ (value.get('precision', 0))|float|round(4)|default("")}}</td>
       <td scope="row">{{ (value.get('recall', 0))|float|round(4)|default("")}}</td>
       <td scope="row">{{ value.get('runtime', "") }}</td>
-      <td scope="row" style="color: #d1d1d1;">{{ value.get('team_image_name', "") }}</td>
+      <td scope="row" style="color: #d1d1d1;">{{ value.get('time_tag', "") }}</td>
       <td scope="row">{{ value['updated'] }}</td>
       <td scope="row">{{ value.get('computed_scenes', "")}}</td>
       <td scope="row">{{ value.get('last_run', "")}}</td>
