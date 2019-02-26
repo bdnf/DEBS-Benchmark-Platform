@@ -76,7 +76,7 @@ class Scheduler:
                     self.last_updated_images[image] = new_timestamp
                     self.updated_status = True
                 else:
-                    logger.info('new tag %s' % new_timestamp)
+                    logger.info('New tag for image %s detected at %s' % (image, new_timestamp))
                     self.last_updated_images[image] = new_timestamp
                     self.updated_status = True
                     self.schedule[image] = 'updated'
@@ -118,6 +118,7 @@ if __name__ == '__main__':
     while(True):
         scheduler.run()
         updated_images = {}
+        logging.info("Schedulers items are: ", scheduler.schedule.items())
         if scheduler.updated_status:
             for image, status in scheduler.schedule.items():
                     if status == 'updated':
@@ -125,7 +126,7 @@ if __name__ == '__main__':
             wait_seconds = wait_lower_bound
 
         if updated_images:
-            logger.info("sending images: ", updated_images)
+            logger.info("Scheduler sends updated images: ", updated_images)
             send_schedule(updated_images)
         else:
             logger.info("Images weren't updated yet")
