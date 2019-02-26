@@ -62,11 +62,11 @@ class Scheduler:
         self.updated_status = False
         logger.info(self.schedule)
         for image, status in self.schedule.items():
-                logger.info('updated: %s' % image)
+                #logger.info('updated: %s' % image)
                 old_timestamp = self.last_updated_images.get(image)
                 new_timestamp = self.crawler.run(image)
                 if old_timestamp == new_timestamp:
-                    logger.info('same')
+                    logger.debug('same: %s' % image)
                     self.updated_status = False
                     if self.schedule.get(image) != 'old' and not None:
                         self.schedule[image] = 'old'

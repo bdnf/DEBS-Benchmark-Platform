@@ -90,13 +90,13 @@ class Database:
         table = self.db[self.table_name]
         images = {}
         for t in table.all():
-                print("entry ", t)
+                # print("entry ", t)
                 if t['team_image_name']:
                     try:
                         docker_hub_link = t['team_image_name'].split('/')
                         if t['updated'] == 'True':
                             print("Updated entry? ", t)
-                            #images.append(str(t['team_image_name']))
+                            # images.append(str(t['team_image_name']))
                             images[t['team_image_name']] = 'updated'
                         else:
                             images[t['team_image_name']] = 'old'
