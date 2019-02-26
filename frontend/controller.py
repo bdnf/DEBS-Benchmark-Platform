@@ -117,7 +117,8 @@ def post_result():
         db.update_result(data)
         return json.dumps(request.json), 200
     else:
-        return jsonify({"message":"Host not allowed"}), 403
+        logging.warning(" %s is allowed NOT to post results" % request.remote_addr)
+        return {"message":"Host not allowed"}, 403
 
 
 @app.route('/', methods=['GET'])
@@ -207,7 +208,8 @@ def post_schedule():
 
         return json.dumps(request.json), 200
     else:
-        return jsonify({"message":"Host not allowed"}), 403
+        logging.warning(" %s is NOT allowed to post schedule" % request.remote_addr)
+        return {"message":"Host not allowed"}, 403
 
 
 @app.route('/schedule', methods=['GET'])
@@ -215,13 +217,13 @@ def get_teams():
     # logging.info("IP address: %s " % request.remote_addr)
     # sys.stdout.flush()
     if request.remote_addr in allowed_hosts:
-        logging.info(" %s is allowed" % request.remote_addr)
         sys.stdout.flush()
         images = db.find_images()
         logging.info("sending schedule")
         logging.debug("sending schedule: %s" % images)
         return json.dumps(images)
     else:
+        logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
         return render_template('404.html'), 404
 
 
