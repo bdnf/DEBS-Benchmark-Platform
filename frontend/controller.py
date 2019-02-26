@@ -102,7 +102,7 @@ def unconvert_time(s):
 # --- ROUTES ----
 @app.route('/result', methods=['POST'])
 def post_result():
-    if request.remote_addr in allowed_hosts:
+    #if request.remote_addr in allowed_hosts:
         data = request.json
         logging.info("received new result: %s" % data)
         sys.stdout.flush()
@@ -116,9 +116,9 @@ def post_result():
         # set all to False
         db.update_result(data)
         return json.dumps(request.json), 200
-    else:
-        logging.warning(" %s is allowed NOT to post results" % request.remote_addr)
-        return {"message":"Host not allowed"}, 403
+    #else:
+        #logging.warning(" %s is allowed NOT to post results" % request.remote_addr)
+        #return {"message":"Host not allowed"}, 403
 
 
 @app.route('/', methods=['GET'])
@@ -196,8 +196,8 @@ def login():
 
 @app.route('/schedule', methods=['POST'])
 def post_schedule():
-    sys.stdout.flush()
-    if request.remote_addr in allowed_hosts:
+
+    #if request.remote_addr in allowed_hosts:
         logging.debug(" %s is allowed to post schedule" % request.remote_addr)
         data = request.json
         logging.info("Received updated schedule")
@@ -209,24 +209,24 @@ def post_schedule():
             logging.debug("image entry %s updated at:  %s" % (image, timestamp))
 
         return json.dumps(request.json), 200
-    else:
-        logging.warning(" %s is NOT allowed to post schedule" % request.remote_addr)
-        return {"message":"Host not allowed"}, 403
+    #else:
+        #logging.warning(" %s is NOT allowed to post schedule" % request.remote_addr)
+        #return {"message":"Host not allowed"}, 403
 
 
 @app.route('/schedule', methods=['GET'])
 def get_teams():
     # logging.info("IP address: %s " % request.remote_addr)
     # sys.stdout.flush()
-    if request.remote_addr in allowed_hosts:
+    #if request.remote_addr in allowed_hosts:
         sys.stdout.flush()
         images = db.find_images()
         logging.info("sending schedule")
         logging.debug("sending schedule: %s" % images)
         return json.dumps(images)
-    else:
-        logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
-        return render_template('404.html'), 404
+    #else:
+    #    logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
+    #    return render_template('404.html'), 404
 
 
 db = Database('teams')
