@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     username = input('Provide username: ').strip(" ")
     username = re.sub(r"[,;\"\'\n\t\s]*", "",username)
-    
+
     if "@" not in username:
         print("Username should contain @ character")
     while(True):
