@@ -15,4 +15,4 @@ WORKDIR /app
 
 #CMD ["python", "controller.py"]
 #CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "controller:app"]
-CMD ["gunicorn", "-b", "0.0.0.0:80", "controller:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "controller:app"]
