@@ -30,8 +30,6 @@ services:
       - db
     volumes:
       - ./frontend/scheduler_logs:/scheduler_logs
-    ports:
-      - 7070
 
   frontend:
     container_name: frontend
@@ -50,7 +48,7 @@ services:
       - ./frontend/frontend_logs:/frontend_logs
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      SCHEDULER_IP: scheduler:7070
+      SCHEDULER_IP: scheduler
 
 networks:
     bench: {}

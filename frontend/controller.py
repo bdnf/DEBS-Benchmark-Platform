@@ -196,11 +196,9 @@ def login():
 
 @app.route('/schedule', methods=['POST'])
 def post_schedule():
-    logging.info("Allowed hosts are: %s" % allowed_hosts)
-    logging.info("ENV is: %s " % request.environ['REMOTE_ADDR'])
     sys.stdout.flush()
     if request.remote_addr in allowed_hosts:
-        logging.info(" %s is allowed to post schedule" % request.remote_addr)
+        logging.debug(" %s is allowed to post schedule" % request.remote_addr)
         data = request.json
         logging.info("Received updated schedule")
         logging.debug("received data: %s" % data)
@@ -213,7 +211,6 @@ def post_schedule():
         return json.dumps(request.json), 200
     else:
         logging.warning(" %s is NOT allowed to post schedule" % request.remote_addr)
-        logging.info("ENV is: %s " % request.environ['REMOTE_ADDR'])
         return {"message":"Host not allowed"}, 403
 
 
@@ -239,6 +236,7 @@ db = Database('teams')
 def make_session_permanent():
     scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
     allowed_hosts.append(scheduler_ip)
+    logging.info("Allowed hosts are: %s" % allowed_hosts)
     session.permanent = True
     app.permanent_session_lifetime = datetime.timedelta(seconds=30)
     #return render_template('logged_out.html'), 500
