@@ -67,7 +67,7 @@ class Scheduler:
                 new_timestamp = self.crawler.run(image)
                 if old_timestamp == new_timestamp:
                     logger.debug('same: %s' % image)
-                    self.updated_status = False
+                    # self.updated_status = False
                     if self.schedule.get(image) != 'old' and not None:
                         self.schedule[image] = 'old'
                 elif old_timestamp is None and status == 'old':
@@ -129,6 +129,7 @@ if __name__ == '__main__':
         if updated_images:
             logger.info("Scheduler sends updated images: ", updated_images)
             send_schedule(updated_images)
+            scheduler.updated_status = False
         else:
             logger.info("Images weren't updated yet")
             wait_seconds += 10
