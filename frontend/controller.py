@@ -39,9 +39,9 @@ logging.basicConfig(
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
 CYCLE_TIME = datetime.timedelta(minutes=20)
 skip_columns = ['time_tag']
-this_server = os.getenv("FRONTEND_SERVER")
+scheduler = os.getenv("SCHEDULER_IP")
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
-allowed_hosts = [this_server, remote_manager, 'scheduler']
+allowed_hosts = [scheduler, remote_manager]
 print("Allowed are: ", allowed_hosts)
 
 # --- helper functions ---
