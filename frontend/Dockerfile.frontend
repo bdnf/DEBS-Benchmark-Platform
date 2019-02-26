@@ -4,12 +4,10 @@ FROM ubuntu:16.04
 RUN apt-get update && apt-get install -y build-essential
 RUN apt-get update && apt-get install -y libtbb-dev
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.6 \
-    python-pip \
-    && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y python3.7
+#RUN apt-get update && apt-get install -y python-pip
+
 RUN pip install --no-cache-dir requests dataset pymysql cryptography sqlalchemy flask flask_restful gunicorn
 RUN pip install --no-cache-dir flask_jwt_extended
 
