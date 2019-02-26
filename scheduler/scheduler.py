@@ -121,7 +121,7 @@ if __name__ == '__main__':
         logging.info("Schedulers items are: %s" % scheduler.schedule)
         if scheduler.updated_status:
             for image, status in scheduler.schedule.items():
-                    logging.info("Status: ", status)
+                    logging.info("Status: %s " % status)
                     if str(status) == 'updated':
                         updated_images[image] = scheduler.last_updated_images[image]
             wait_seconds = wait_lower_bound
