@@ -1,6 +1,7 @@
 import dataset
 import os
 import getpass
+import re
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -47,6 +48,8 @@ if __name__ == '__main__':
     print("INFO! Username should containe @ character")
 
     username = input('Provide username: ').strip(" ")
+    username = re.sub(r"[,;\"\'\n\t\s]*", "",username)
+    
     if "@" not in username:
         print("Username should contain @ character")
     while(True):

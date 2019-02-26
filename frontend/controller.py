@@ -161,7 +161,7 @@ def add_teams():
         return render_template('404.html'), 404
 
 
-@app.route('/logins', methods=['GET', "POST"])
+@app.route('/login', methods=['GET', "POST"])
 def login():
     if request.method == 'GET':
         return render_template('login.html')

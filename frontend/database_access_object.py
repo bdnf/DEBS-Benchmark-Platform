@@ -50,15 +50,18 @@ class Database:
         # Note! upsert wont work with 'name' field
         table = self.db[self.table_name]
         row = table.find_one(name=team)
-        print("Found entry", row)
         if row:
-            table.update(dict(name=team, team_image_name=image, updated=status), ['name'])
+            print("Found entry", row)
+            if status == "True":
+                table.update(dict(name=team, team_image_name=image, updated=status, last_run=datetime.datetime.utcnow()), ['name'])
+            else:
+                table.update(dict(name=team, team_image_name=image, updated=status), ['name'])
         else:
             print("Entry is new")
-            table.insert(dict(name=team, team_image_name=image, updated=status
-            # accuracy=0.0, recall =0.0, precision = 0.0, runtime=0.0,
-            # scenes_processed = 0, tag='', time_tag =0, last_run =0
-            ))
+            if status == "True":
+                table.insert(dict(name=team, team_image_name=image, updated=status, last_run=datetime.datetime.utcnow()), ['name'])
+            else:
+                table.insert(dict(name=team, team_image_name=image, updated=status))
         sys.stdout.flush()
 
     def update_image(self, image_name, timestamp):
@@ -141,24 +144,10 @@ class Database:
                 max_runtime = row['runtime']
 
             return ranking, last_experiment_time, max_runtime
+            
         except (pymysql.ProgrammingError, pymysql.err.ProgrammingError):
-            print("It this is the first run make sure that DB is initialized")
+            print("If this is the first run make sure that DB is initialized")
             return [], "", 0
         except pymysql.InternalError as e:
             print(e)
             return ranking, datetime.datetime.utcnow(), 0
-
-        '''
-            bad error catching procedure, but works!
-            Simple approach, like
-                    # try:
-                    #     last_time_entry = self.db.query(query2)
-                    # except pymysql.err.InternalError as e:
-                    #     print("No column exist")
-            does not work with this dataset library.
-        '''
-
-    def find_user(self, username):
-        if self.table_name == "access_control":
-            table = self.db[self.table_name]
-            table.find_one(username=username)
