@@ -102,19 +102,22 @@ def unconvert_time(s):
 # --- ROUTES ----
 @app.route('/result', methods=['POST'])
 def post_result():
-    data = request.json
-    logging.info("received new result: %s" % data)
-    sys.stdout.flush()
-    accuracy = data.get('accuracy')
-    if not accuracy:
-        return jsonify({"message":"Bad request"}), 400
-    global CYCLE_TIME
-    loop_time = data.get('piggybacked_manager_timeout', CYCLE_TIME)
-    CYCLE_TIME = datetime.timedelta(seconds=loop_time)
-    # update database
-    # set all to False
-    db.update_result(data)
-    return json.dumps(request.json), 200
+    if request.remote_addr in allowed_hosts:
+        data = request.json
+        logging.info("received new result: %s" % data)
+        sys.stdout.flush()
+        accuracy = data.get('accuracy')
+        if not accuracy:
+            return jsonify({"message":"Bad request"}), 400
+        global CYCLE_TIME
+        loop_time = data.get('piggybacked_manager_timeout', CYCLE_TIME)
+        CYCLE_TIME = datetime.timedelta(seconds=loop_time)
+        # update database
+        # set all to False
+        db.update_result(data)
+        return json.dumps(request.json), 200
+    else:
+        return jsonify({"message":"Host not allowed"}), 403
 
 
 @app.route('/', methods=['GET'])
@@ -192,33 +195,34 @@ def login():
 
 @app.route('/schedule', methods=['POST'])
 def post_schedule():
-    data = request.json
-    logging.info("Received updated schedule")
-    logging.debug("received data: %s" % data)
-    if not data:
-        return jsonify({"message":"Bad request"}), 400
-    for image, timestamp in data.items():
-        db.update_image(image, timestamp)
-        logging.debug("image entry %s updated at:  %s" % (image, timestamp))
+    if request.remote_addr in allowed_hosts:
+        data = request.json
+        logging.info("Received updated schedule")
+        logging.debug("received data: %s" % data)
+        if not data:
+            return jsonify({"message":"Bad request"}), 400
+        for image, timestamp in data.items():
+            db.update_image(image, timestamp)
+            logging.debug("image entry %s updated at:  %s" % (image, timestamp))
 
-    return json.dumps(request.json), 200
+        return json.dumps(request.json), 200
+    else:
+        return jsonify({"message":"Host not allowed"}), 403
 
 
 @app.route('/schedule', methods=['GET'])
 def get_teams():
-    logging.info("IP address: %s " % request.remote_addr)
-    sys.stdout.flush()
+    # logging.info("IP address: %s " % request.remote_addr)
+    # sys.stdout.flush()
     if request.remote_addr in allowed_hosts:
         logging.info(" %s is allowed" % request.remote_addr)
+        sys.stdout.flush()
+        images = db.find_images()
+        logging.info("sending schedule")
+        logging.debug("sending schedule: %s" % images)
+        return json.dumps(images)
     else:
-        logging.info(" %s is NOT allowed" % request.remote_addr)
-    sys.stdout.flush()
-    images = db.find_images()
-    logging.info("sending schedule")
-    logging.debug("sending schedule: %s" % images)
-    return json.dumps(images)
-    #else:
-        #return render_template('404.html'), 404
+        return render_template('404.html'), 404
 
 
 db = Database('teams')
