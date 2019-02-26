@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y libtbb-dev
 
 
 RUN apt-get update && apt-get install -y python3.7
-#RUN apt-get update && apt-get install -y python-pip
+RUN apt-get update && apt-get install -y python3-pip
 
 RUN pip install --no-cache-dir requests dataset pymysql cryptography sqlalchemy flask flask_restful gunicorn
 RUN pip install --no-cache-dir flask_jwt_extended
