@@ -7,6 +7,6 @@ logs/
 *.db
 dbs
 db/
-client-app
-container-manager
+client-app/
+container-manager/
 Dockerfile.client
