@@ -11,9 +11,6 @@ services:
       - .env
     ports:
       - 3306:3306
-    networks:
-            frontend:
-                ipv4_address: 172.20.0.2
     # healthcheck:
     #   test: ["CMD", "mysqladmin", "ping", "-h", "db:3306"]
     #   timeout: 5s
@@ -33,9 +30,8 @@ services:
       - db
     volumes:
       - ./frontend/scheduler_logs:/scheduler_logs
-    networks:
-            frontend:
-                ipv4_address: 172.20.0.3
+    ports:
+      - 7070
 
   frontend:
     container_name: frontend
@@ -52,14 +48,9 @@ services:
       - 8080:8080
     volumes:
       - ./frontend/frontend_logs:/frontend_logs
-    networks:
-            frontend:
-                ipv4_address: 172.20.0.4
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      SCHEDULER_IP:  172.20.0.3
+      SCHEDULER_IP: scheduler:7070
 
 networks:
-  frontend:
-    ipam:
-      config:
-        - subnet: 172.20.0.0/24
+    bench: {}
