@@ -24,7 +24,7 @@ from database_access_object import Database
 # --- APP ---
 app = Flask(__name__)
 # app.secret_key = 'super-secret'
-app.config['SECRET_KEY'] = os.getenv("SECRET_APP_KEY", None)
+app.config['SECRET_KEY'] = os.getenv("SECRET_APP_KEY")
 # app.config['JWT_TOKEN_LOCATION'] = ['json']
 jwt = JWTManager(app)
 # ------
@@ -49,10 +49,7 @@ local_testing = False
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
 allowed_hosts = [remote_manager]
-# --- find scheduler ---
-scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
-allowed_hosts.append(scheduler_ip)
-logging.info("Allowed hosts are: %s" % allowed_hosts)
+
 
 # --- helper functions ---
 def update_waiting_time(seconds):
@@ -246,6 +243,10 @@ def make_session_permanent():
 
 
 if __name__ == '__main__':
+    # --- find scheduler ---
+    scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
+    allowed_hosts.append(scheduler_ip)
+    logging.info("Allowed hosts are: %s" % allowed_hosts)
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=40))
     logging.warning("Waiting for DB server to start: %s seconds" % frontend_backoff)
     time.sleep(frontend_backoff)
