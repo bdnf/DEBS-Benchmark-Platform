@@ -49,7 +49,10 @@ local_testing = False
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
 allowed_hosts = [remote_manager]
-
+# --- find scheduler ---
+scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
+allowed_hosts.append(scheduler_ip)
+logging.debug("Allowed hosts are: %s" % allowed_hosts)
 
 # --- helper functions ---
 def update_waiting_time(seconds):
@@ -232,9 +235,9 @@ def get_teams():
         logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
         return render_template('404.html'), 404
 
+
 # --- DB Access ---
 db = Database('teams')
-
 
 @app.before_request
 def make_session_permanent():
@@ -243,17 +246,13 @@ def make_session_permanent():
 
 
 if __name__ == '__main__':
-    # --- find scheduler ---
-    scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
-    allowed_hosts.append(scheduler_ip)
-    logging.info("Allowed hosts are: %s" % allowed_hosts)
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=40))
     logging.warning("Waiting for DB server to start: %s seconds" % frontend_backoff)
     time.sleep(frontend_backoff)
 
     '''
         Use CMD in Dockerfile for production deployment:
-            gunicorn -b 0.0.0.0:8080 controller:app (with worker flag if needed -w 4 )
+            gunicorn -b 0.0.0.0:8080 controller:app 
         or run locally with:
             app.run(host='0.0.0.0', port=8080)
     '''
