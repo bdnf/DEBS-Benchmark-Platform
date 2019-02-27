@@ -105,7 +105,7 @@ if __name__ == '__main__':
     backoff = int(os.getenv("SCHEDULER_STARTUP_BACKOFF", default=30))
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=0))
     if backoff <= frontend_backoff:
-        logger.info("Sheduler should start after the frontend server. Correcting")
+        logger.info("Sheduler should start after the frontend server. Adding small backoff")
         backoff = frontend_backoff + 15
     time.sleep(backoff)
 
