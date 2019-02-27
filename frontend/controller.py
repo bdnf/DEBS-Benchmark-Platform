@@ -242,7 +242,8 @@ db = Database('teams')
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = datetime.timedelta(seconds=60)
+    sess_timeout = int(os.getenv("SESSION_TIMEOUT", default=60))
+    app.permanent_session_lifetime = datetime.timedelta(seconds=sess_timeout)
 
 
 if __name__ == '__main__':
@@ -252,7 +253,7 @@ if __name__ == '__main__':
 
     '''
         Use CMD in Dockerfile for production deployment:
-            gunicorn -b 0.0.0.0:8080 controller:app 
+            gunicorn -b 0.0.0.0:8080 controller:app
         or run locally with:
             app.run(host='0.0.0.0', port=8080)
     '''
