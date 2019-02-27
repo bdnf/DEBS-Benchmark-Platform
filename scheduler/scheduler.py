@@ -55,7 +55,7 @@ class Scheduler:
         response = requests.get(endpoint)
         logger.info(response.status_code)
         schedule = response.json()
-        logger.info("Scheduled images are: %s " % schedule)
+        logger.info("Requested image list is: %s " % schedule)
         return schedule, response.status_code
 
     def run(self):
@@ -72,7 +72,7 @@ class Scheduler:
                         self.schedule[image] = 'old'
                 elif old_timestamp is None and status == 'old':
                     # do nothing, only save timestamp as current one
-                    print("all images are same")
+                    logger.info("all images are same")
                     self.last_updated_images[image] = new_timestamp
                     self.updated_status = True
                 else:
@@ -105,12 +105,12 @@ if __name__ == '__main__':
     backoff = int(os.getenv("SCHEDULER_STARTUP_BACKOFF", default=30))
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=0))
     if backoff <= frontend_backoff:
-        logger.info("Sheduler should start after the frontend server. Adding small backoff")
+        logger.debug("Sheduler should start after the frontend server. Adding small backoff")
         backoff = frontend_backoff + 15
     time.sleep(backoff)
 
     scheduler = Scheduler()
-    # make crawling requests window non-uniform
+    # make crawling request window non-uniform
     wait_seconds = int(os.getenv("SCHEDULER_SLEEP_TIME", default=5))
     wait_upper_bound = wait_seconds*10
     wait_lower_bound = wait_seconds

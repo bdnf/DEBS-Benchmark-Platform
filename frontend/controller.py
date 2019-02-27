@@ -16,7 +16,11 @@ from flask_jwt_extended import (
 
 from security import authenticate, find_container_ip_addr
 from database_access_object import Database
-
+'''
+    For local testing set:
+        @local_testing = True
+    or add your host to @allowed_hosts
+'''
 # --- APP ---
 app = Flask(__name__)
 app.secret_key = 'super-secret'
@@ -40,12 +44,11 @@ logging.basicConfig(
 # --- constants ---
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
 CYCLE_TIME = datetime.timedelta(minutes=20)
-skip_columns = ['']
+skip_columns = ['team_image_name']
 local_testing = True
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
 allowed_hosts = [remote_manager]
-print("Allowed are: ", allowed_hosts)
 
 # --- helper functions ---
 def update_waiting_time(seconds):
@@ -229,25 +232,28 @@ def get_teams():
         logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
         return render_template('404.html'), 404
 
-
+# --- DB Access ---
 db = Database('teams')
 
 
 @app.before_request
 def make_session_permanent():
     session.permanent = True
-    app.permanent_session_lifetime = datetime.timedelta(seconds=30)
-    #return render_template('logged_out.html'), 500
+    app.permanent_session_lifetime = datetime.timedelta(seconds=60)
 
 
 if __name__ == '__main__':
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=40))
     logging.warning("Waiting for DB server to start: %s seconds" % frontend_backoff)
     time.sleep(frontend_backoff)
+
     # --- find scheduler ---
     scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
     allowed_hosts.append(scheduler_ip)
     logging.info("Allowed hosts are: %s" % allowed_hosts)
-
-    # gunicorn -w 4 -b 127.0.0.1:8080 controller:app
-    #app.run(host='0.0.0.0', port=8080)
+    '''
+        Use CMD in Dockerfile for production deployment:
+            gunicorn -b 0.0.0.0:8080 controller:app (with worker flag if needed -w 4 )
+        or run locally with:
+            app.run(host='0.0.0.0', port=8080)
+    '''
