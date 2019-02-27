@@ -5,7 +5,7 @@ import os
 import sys
 import datetime
 
-#generic root connection
+# generic root connection. To be used separately elsewhere
 def connect_to_db(table, access='user'):
 
     if 'MYSQL_ROOT_PASSWORD' in os.environ:
@@ -18,8 +18,10 @@ def connect_to_db(table, access='user'):
             user = os.getenv('MYSQL_USER')
             password = os.getenv('MYSQL_PASSWORD')
         path = 'mysql://'+ user +':'+ password + '@'+ host +':' + str(port) + '/' + table
-        print(path)
+        # print(path)
         return dataset.connect(path)
+    else:
+        print(" MYSQL ENVs is not ")
 
 class Database:
     def __init__(self, table_name):
@@ -40,10 +42,10 @@ class Database:
             user = os.getenv('MYSQL_USER')
             password = os.getenv('MYSQL_PASSWORD')
             dbase = os.getenv('MYSQL_DATABASE')
-            print(host, port, user, password, dbase)
+            # print(host, port, user, password, dbase)
 
             path = 'mysql://'+ user +':'+ password + '@'+ host +':' + str(port) + '/' + dbase
-            print(path)
+            # print(path)
         self.db = dataset.connect(path)
 
     def add_team(self, team, image, status):
@@ -51,10 +53,10 @@ class Database:
         table = self.db[self.table_name]
         row = table.find_one(name=team)
         if row:
-            print("Found entry", row)
+            # print("Found entry", row)
             table.update(dict(name=team, team_image_name=image, updated=status), ['name'])
         else:
-            print("Entry is new")
+            # print("Entry is new")
             table.insert(dict(name=team, team_image_name=image, updated=status))
         sys.stdout.flush()
 
@@ -83,7 +85,7 @@ class Database:
                 last_run=result['last_run'],
                 updated='False',
             ), ['team_image_name'])
-            print("result updated for image ", result['team_image_name'])
+            # print("result updated for image ", result['team_image_name'])
 
 
     def find_images(self):

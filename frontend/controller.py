@@ -108,7 +108,7 @@ def unconvert_time(s):
 # --- ROUTES ----
 @app.route('/result', methods=['POST'])
 def post_result():
-    if request.remote_addr in allowed_hosts or local_testing:
+    if (request.remote_addr in allowed_hosts) or local_testing:
         data = request.json
         logging.info("received new result: %s" % data)
         sys.stdout.flush()
@@ -202,7 +202,7 @@ def login():
 @app.route('/schedule', methods=['POST'])
 def post_schedule():
 
-    if request.remote_addr in allowed_hosts or local_testing:
+    if (request.remote_addr in allowed_hosts) or local_testing:
         logging.debug(" %s is allowed to post schedule" % request.remote_addr)
         data = request.json
         logging.info("Received updated schedule")
@@ -223,7 +223,7 @@ def post_schedule():
 def get_teams():
     # logging.info("IP address: %s " % request.remote_addr)
     # sys.stdout.flush()
-    if request.remote_addr in allowed_hosts or local_testing:
+    if (request.remote_addr in allowed_hosts) or local_testing:
         sys.stdout.flush()
         images = db.find_images()
         logging.info("sending schedule: %s" % images)
@@ -251,6 +251,7 @@ if __name__ == '__main__':
     scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
     allowed_hosts.append(scheduler_ip)
     logging.info("Allowed hosts are: %s" % allowed_hosts)
+
     '''
         Use CMD in Dockerfile for production deployment:
             gunicorn -b 0.0.0.0:8080 controller:app (with worker flag if needed -w 4 )
