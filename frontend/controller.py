@@ -49,6 +49,10 @@ local_testing = False
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
 allowed_hosts = [remote_manager]
+# --- find scheduler ---
+scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
+allowed_hosts.append(scheduler_ip)
+logging.info("Allowed hosts are: %s" % allowed_hosts)
 
 # --- helper functions ---
 def update_waiting_time(seconds):
@@ -124,6 +128,7 @@ def post_result():
         return json.dumps(request.json), 200
     else:
         logging.warning(" %s is allowed NOT to post results" % request.remote_addr)
+        logging.warnings(" Allowed are %s", allowed_hosts)
         return {"message":"Host not allowed"}, 403
 
 
@@ -246,11 +251,6 @@ if __name__ == '__main__':
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=40))
     logging.warning("Waiting for DB server to start: %s seconds" % frontend_backoff)
     time.sleep(frontend_backoff)
-
-    # --- find scheduler ---
-    scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
-    allowed_hosts.append(scheduler_ip)
-    logging.info("Allowed hosts are: %s" % allowed_hosts)
 
     '''
         Use CMD in Dockerfile for production deployment:
