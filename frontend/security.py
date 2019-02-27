@@ -21,3 +21,6 @@ def find_container_ip_addr(container_name):
     #     return user
     # else:
     #     return None
+def identity(payload):
+    user_id = payload['identity']
+    return db['registrations'].find_one(username=user_id)

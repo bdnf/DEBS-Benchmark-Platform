@@ -23,9 +23,9 @@ from database_access_object import Database
 '''
 # --- APP ---
 app = Flask(__name__)
-app.secret_key = 'super-secret'
-app.config['SECRET_KEY'] = 'super-secret'
-app.config['JWT_TOKEN_LOCATION'] = ['json']
+# app.secret_key = 'super-secret'
+app.config['SECRET_KEY'] = os.getenv("SECRET_APP_KEY", None)
+# app.config['JWT_TOKEN_LOCATION'] = ['json']
 jwt = JWTManager(app)
 # ------
 
@@ -188,7 +188,7 @@ def login():
         sys.stdout.flush()
         if not user:
             return render_template('404.html'), 404
-        access_token = create_access_token(identity=username+password, fresh=False)
+        access_token = create_access_token(identity=username, fresh=False)
         response = redirect(url_for('add_teams'))
         #print("TOKEN:", access_token)
         session['access_token'] = access_token
