@@ -128,16 +128,14 @@ def post_result():
         return json.dumps(request.json), 200
     else:
         logging.warning(" %s is allowed NOT to post results" % request.remote_addr)
-        logging.warnings(" Allowed are %s", allowed_hosts)
         return {"message":"Host not allowed"}, 403
 
 
 @app.route('/', methods=['GET'])
 def index():
-    #db.connect_to_db()
+    logging.debug("INDEX route requested by IP address: %s " % request.remote_addr)
+
     query, last_experiment_time, waiting_time = db.get_ranking()
-    #print("last_experiment_time ", last_experiment_time)
-    #print("waiting_time ", waiting_time)
     ranking, queue = generate_ranking_table(query, last_experiment_time, waiting_time)
     return render_template('table.html', post=ranking, team=queue)
 
@@ -147,9 +145,9 @@ def index():
 def add_teams():
     # print(request.json)
     if session.get('access_token'):
-    #if session['access_token']:
         current_user = get_jwt_identity()
         decoded = decode_token(session['access_token'])
+        # can additionally decode token to verify
         # if not identity(decoded):
         #     return render_template('404.html'), 404
         if request.method == 'GET':
@@ -162,7 +160,7 @@ def add_teams():
             if not updated:
                 updated = 'False'
             else:
-                updated ="True"
+                updated = 'True' # default form value is 'on'
             try:
                 if not image:
                     return {"message": "Please provide image name"}, 500
@@ -190,7 +188,7 @@ def login():
         sys.stdout.flush()
         if not user:
             return render_template('404.html'), 404
-        access_token = create_access_token(identity=username, fresh=False)
+        access_token = create_access_token(identity=username+password, fresh=False)
         response = redirect(url_for('add_teams'))
         #print("TOKEN:", access_token)
         session['access_token'] = access_token
