@@ -17,11 +17,13 @@ from flask_jwt_extended import (
 from security import authenticate, find_container_ip_addr
 from database_access_object import Database
 
+# --- APP ---
 app = Flask(__name__)
 app.secret_key = 'super-secret'
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['JWT_TOKEN_LOCATION'] = ['json']
 jwt = JWTManager(app)
+# ------
 
 LOG_FOLDER_NAME = "controller_logs"
 if not os.path.exists(LOG_FOLDER_NAME):
@@ -39,7 +41,8 @@ logging.basicConfig(
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
 CYCLE_TIME = datetime.timedelta(minutes=20)
 skip_columns = ['']
-
+local_testing = True
+# --- Allowed HOSTS (scheduler container will be detected at runtime)
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
 allowed_hosts = [remote_manager]
 print("Allowed are: ", allowed_hosts)
@@ -102,7 +105,7 @@ def unconvert_time(s):
 # --- ROUTES ----
 @app.route('/result', methods=['POST'])
 def post_result():
-    #if request.remote_addr in allowed_hosts:
+    if request.remote_addr in allowed_hosts or local_testing:
         data = request.json
         logging.info("received new result: %s" % data)
         sys.stdout.flush()
@@ -116,9 +119,9 @@ def post_result():
         # set all to False
         db.update_result(data)
         return json.dumps(request.json), 200
-    #else:
-        #logging.warning(" %s is allowed NOT to post results" % request.remote_addr)
-        #return {"message":"Host not allowed"}, 403
+    else:
+        logging.warning(" %s is allowed NOT to post results" % request.remote_addr)
+        return {"message":"Host not allowed"}, 403
 
 
 @app.route('/', methods=['GET'])
@@ -134,8 +137,7 @@ def index():
 @app.route('/add_team', methods=['GET', 'POST'])
 #@jwt_required
 def add_teams():
-    print(request.json)
-    #print('access_token!!: ', session['access_token'])
+    # print(request.json)
     if session.get('access_token'):
     #if session['access_token']:
         current_user = get_jwt_identity()
@@ -197,7 +199,7 @@ def login():
 @app.route('/schedule', methods=['POST'])
 def post_schedule():
 
-    #if request.remote_addr in allowed_hosts:
+    if request.remote_addr in allowed_hosts or local_testing:
         logging.debug(" %s is allowed to post schedule" % request.remote_addr)
         data = request.json
         logging.info("Received updated schedule")
@@ -209,23 +211,23 @@ def post_schedule():
             logging.debug("image entry %s updated at:  %s" % (image, timestamp))
 
         return json.dumps(request.json), 200
-    #else:
-        #logging.warning(" %s is NOT allowed to post schedule" % request.remote_addr)
-        #return {"message":"Host not allowed"}, 403
+    else:
+        logging.warning(" %s is NOT allowed to post schedule" % request.remote_addr)
+        return {"message":"Host not allowed"}, 403
 
 
 @app.route('/schedule', methods=['GET'])
 def get_teams():
     # logging.info("IP address: %s " % request.remote_addr)
     # sys.stdout.flush()
-    #if request.remote_addr in allowed_hosts:
+    if request.remote_addr in allowed_hosts or local_testing:
         sys.stdout.flush()
         images = db.find_images()
         logging.info("sending schedule: %s" % images)
         return json.dumps(images)
-    #else:
-    #    logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
-    #    return render_template('404.html'), 404
+    else:
+        logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
+        return render_template('404.html'), 404
 
 
 db = Database('teams')
@@ -242,7 +244,7 @@ if __name__ == '__main__':
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=40))
     logging.warning("Waiting for DB server to start: %s seconds" % frontend_backoff)
     time.sleep(frontend_backoff)
-    # find scheduler
+    # --- find scheduler ---
     scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
     allowed_hosts.append(scheduler_ip)
     logging.info("Allowed hosts are: %s" % allowed_hosts)

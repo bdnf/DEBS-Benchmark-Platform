@@ -118,20 +118,20 @@ if __name__ == '__main__':
     while(True):
         scheduler.run()
         updated_images = {}
-        logging.info("Schedulers items are: %s" % scheduler.schedule)
+        # logging.info("Scheduler items are: %s" % scheduler.schedule)
         if scheduler.updated_status:
             for image, status in scheduler.schedule.items():
-                    logging.info("Status: %s " % status)
+                    # logging.info("Status: %s " % status)
                     if str(status) == 'updated':
                         updated_images[image] = scheduler.last_updated_images[image]
             wait_seconds = wait_lower_bound
 
         if updated_images:
-            logger.info("Scheduler sends updated images: ", updated_images)
+            logger.info("Scheduler sends updated images: " % updated_images)
             send_schedule(updated_images)
             scheduler.updated_status = False
         else:
-            logger.info("Images weren't updated yet")
+            logger.info("Images weren't updated yet. Idling...")
             wait_seconds += 10
             if wait_seconds > wait_upper_bound:
                 wait_seconds = wait_lower_bound
