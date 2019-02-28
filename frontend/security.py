@@ -5,9 +5,13 @@ import json
 db = connect_to_db("teams")
 table = db['registrations']
 
+
 def authenticate(username, password):
     user = db['registrations'].find_one(username=username, password=password)
     return user
+
+def restart_scheduler(container_name):
+    subprocess.check_output(['docker', 'restart', container_name])
 
 def find_container_ip_addr(container_name):
     info = subprocess.check_output(['docker', 'inspect', container_name])

@@ -4,6 +4,10 @@ import dataset
 import os
 import sys
 import datetime
+from security import restart_scheduler
+
+# scheduler service name for restarting upon new entry
+SCHEDULER ="scheduler"
 
 # generic root connection. To be used separately elsewhere
 def connect_to_db(table, access='user'):
@@ -58,6 +62,7 @@ class Database:
         else:
             # print("Entry is new")
             table.insert(dict(name=team, team_image_name=image, updated=status))
+            restart_scheduler(SCHEDULER)
         sys.stdout.flush()
 
     def update_image(self, image_name, timestamp):
