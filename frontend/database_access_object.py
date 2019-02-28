@@ -4,10 +4,12 @@ import dataset
 import os
 import sys
 import datetime
-from security import restart_scheduler
+import subprocess
 
 # scheduler service name for restarting upon new entry
 SCHEDULER ="scheduler"
+def restart_scheduler(container_name):
+    subprocess.check_output(['docker', 'restart', container_name])
 
 # generic root connection. To be used separately elsewhere
 def connect_to_db(table, access='user'):
