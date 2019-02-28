@@ -64,7 +64,7 @@ class Database:
         else:
             # print("Entry is new")
             table.insert(dict(name=team, team_image_name=image, updated=status))
-            # restart_scheduler(SCHEDULER)
+            restart_scheduler(SCHEDULER)
         sys.stdout.flush()
 
     def update_image(self, image_name, timestamp):
