@@ -111,9 +111,9 @@ if __name__ == '__main__':
 
     scheduler = Scheduler()
     # make crawling request window non-uniform
-    wait_seconds = int(os.getenv("SCHEDULER_SLEEP_TIME", default=5))
-    wait_upper_bound = wait_seconds*10
-    wait_lower_bound = wait_seconds
+    wait_seconds = int(os.getenv("SCHEDULER_SLEEP_TIME", default=60))
+    # wait_upper_bound = wait_seconds*10
+    # wait_lower_bound = wait_seconds
 
     while(True):
         scheduler.run()
@@ -124,7 +124,7 @@ if __name__ == '__main__':
                     # logging.info("Status: %s " % status)
                     if str(status) == 'updated':
                         updated_images[image] = scheduler.last_updated_images[image]
-            wait_seconds = wait_lower_bound
+            # wait_seconds = wait_lower_bound
 
         if updated_images:
             logger.info("Scheduler sends updated images: " % updated_images)
@@ -132,9 +132,9 @@ if __name__ == '__main__':
             scheduler.updated_status = False
         else:
             logger.info("Images weren't updated yet. Idling...")
-            wait_seconds += 10
-            if wait_seconds > wait_upper_bound:
-                wait_seconds = wait_lower_bound
+            # wait_seconds += 10
+            # if wait_seconds > wait_upper_bound:
+            #     wait_seconds = wait_lower_bound
 
         time.sleep(wait_seconds)
 
