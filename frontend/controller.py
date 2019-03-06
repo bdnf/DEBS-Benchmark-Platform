@@ -45,7 +45,7 @@ logging.basicConfig(
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
 CYCLE_TIME = datetime.timedelta(minutes=20)
 skip_columns = ['team_image_name']
-local_testing = False
+local_testing = True
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER").split(",")
 allowed_hosts = remote_manager
