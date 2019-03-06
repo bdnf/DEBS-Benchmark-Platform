@@ -47,8 +47,8 @@ CYCLE_TIME = datetime.timedelta(minutes=20)
 skip_columns = ['team_image_name']
 local_testing = False
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
-remote_manager = os.getenv("REMOTE_MANAGER_SERVER")
-allowed_hosts = [remote_manager]
+remote_manager = os.getenv("REMOTE_MANAGER_SERVER").split(",")
+allowed_hosts = remote_manager
 # --- find scheduler ---
 scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
 allowed_hosts.append(scheduler_ip)
