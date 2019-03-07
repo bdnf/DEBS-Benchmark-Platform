@@ -14,7 +14,7 @@ PATH = '/schedule'
 LOG_FOLDER_NAME = "scheduler_logs"
 if not os.path.exists(LOG_FOLDER_NAME):
     os.makedirs(LOG_FOLDER_NAME)
-filename = '/scheduler.log'
+filename = 'scheduler.log'
 logging.basicConfig(
                     level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s',

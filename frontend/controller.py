@@ -3,7 +3,7 @@ import logging
 import json
 from flask import (
         Flask, jsonify,
-        render_template, request, redirect, url_for, session
+        render_template, request, redirect, url_for, session, abort
         )
 import time
 import sys
@@ -32,7 +32,7 @@ jwt = JWTManager(app)
 LOG_FOLDER_NAME = "controller_logs"
 if not os.path.exists(LOG_FOLDER_NAME):
     os.makedirs(LOG_FOLDER_NAME)
-filename='/controller.log'
+filename='controller.log'
 logging.basicConfig(
                     level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s',
@@ -40,6 +40,7 @@ logging.basicConfig(
                      logging.FileHandler("{0}/{1}".format(LOG_FOLDER_NAME, filename)),
                      logging.StreamHandler()
                     ])
+logger = logging.getLogger()
 
 # --- constants ---
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
@@ -233,7 +234,7 @@ def get_teams():
         return json.dumps(images)
     else:
         logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
-        return render_template('404.html'), 404
+        return abort(403)
 
 
 # --- DB Access ---
