@@ -150,7 +150,7 @@ def index():
     logging.debug("INDEX route requested by IP address: %s " % request.remote_addr)
 
     query, last_experiment_time, waiting_time = db.get_ranking()
-    logging.info("Query: %s, last_experiment_time: %s, wait: %s" (query, last_experiment_time, waiting_time))
+    logging.info("Query: %s, last_experiment_time: %s, wait: %s" % (query, last_experiment_time, waiting_time))
     ranking, queue = generate_ranking_table(query, last_experiment_time, waiting_time)
     logging.info("R: %s, Q: %s" % (ranking,queue))
     return render_template('table.html', post=ranking, team=queue)
