@@ -4,9 +4,7 @@ import json
 import datetime
 from crawler import DockerCrawler
 import time
-import pymysql
 import requests
-pymysql.install_as_MySQLdb()
 
 #HOST = "http://127.0.0.1:8080"
 PATH = '/schedule'

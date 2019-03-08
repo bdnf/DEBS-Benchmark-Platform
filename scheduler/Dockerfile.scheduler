@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN python3 -V
 
-RUN pip3 install --no-cache-dir requests dataset pymysql cryptography sqlalchemy
+RUN pip3 install --no-cache-dir requests dataset
 
 COPY . /app
 WORKDIR /app
