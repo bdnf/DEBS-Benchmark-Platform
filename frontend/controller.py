@@ -55,7 +55,7 @@ allowed_hosts = remote_manager
 # --- find scheduler ---
 scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
 allowed_hosts.append(scheduler_ip)
-logging.debug("Allowed hosts are: %s" % allowed_hosts)
+logging.info("Allowed hosts are: %s" % allowed_hosts)
 
 team_status = {}
 # --- helper functions ---
