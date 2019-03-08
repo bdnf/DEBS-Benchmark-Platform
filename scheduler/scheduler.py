@@ -11,6 +11,19 @@ pymysql.install_as_MySQLdb()
 #HOST = "http://127.0.0.1:8080"
 PATH = '/schedule'
 
+LOG_FOLDER_NAME = "scheduler_logs"
+if not os.path.exists(LOG_FOLDER_NAME):
+    os.makedirs(LOG_FOLDER_NAME)
+filename = 'scheduler.log'
+logging.basicConfig(
+                    level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s',
+                    handlers=[
+                     logging.FileHandler("%s/%s" % (LOG_FOLDER_NAME, filename)),
+                     logging.StreamHandler()
+                    ])
+# logger = logging.getLogger()
+
 endpoint = os.getenv("FRONTEND_SERVER")
 if endpoint is None:
     logging.error("please specify front-end server address!")
@@ -87,18 +100,6 @@ def send_schedule(payload):
 
 
 if __name__ == '__main__':
-    LOG_FOLDER_NAME = "scheduler_logs"
-    if not os.path.exists(LOG_FOLDER_NAME):
-        os.makedirs(LOG_FOLDER_NAME)
-    filename = 'scheduler.log'
-    logging.basicConfig(
-                        level=logging.INFO,
-                        format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s',
-                        handlers=[
-                         logging.FileHandler("%s/%s" % (LOG_FOLDER_NAME, filename)),
-                         logging.StreamHandler()
-                        ])
-    # logger = logging.getLogger()
     logging.info("Waiting for DB server to start")
     logging.info("Waiting for the backend server to start")
     backoff = int(os.getenv("SCHEDULER_STARTUP_BACKOFF", default=30))
