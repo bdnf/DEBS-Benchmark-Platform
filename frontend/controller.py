@@ -84,7 +84,7 @@ def generate_ranking_table(result, last_run, time_to_wait):
     queue = []
     time = 0
     update_waiting_time(time_to_wait)
-    if not last_run and not result:
+    if not result:
         return ranking, queue
     if last_run:
         last_run = datetime.datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S')
