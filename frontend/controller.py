@@ -98,7 +98,7 @@ def generate_ranking_table(result, last_run, time_to_wait):
        current_status = ""
        if team_name:
            current_status = team_status.get(team_name, "")
-       if row.get('updated', None)  == "True":
+       if row.get('updated', None)  == ("True" or True):
            if time:
                queue.append({row['name']: {
                "eta": unconvert_time(time + DELTA*(marked_to_run)),
@@ -150,7 +150,9 @@ def index():
     logging.debug("INDEX route requested by IP address: %s " % request.remote_addr)
 
     query, last_experiment_time, waiting_time = db.get_ranking()
+    logging.info("Query: %s, last_experiment_time: %s, wait: %s" (query, last_experiment_time, waiting_time))
     ranking, queue = generate_ranking_table(query, last_experiment_time, waiting_time)
+    logging.info("R: %s, Q: %s" % (ranking,queue))
     return render_template('table.html', post=ranking, team=queue)
 
 @app.route('/status_update', methods=['GET', 'POST'])
@@ -197,9 +199,9 @@ def add_teams():
             updated = request.values.get('updated')
             logging.info("Requested to add team %s with image %s and status: %s" % (team, image, updated))
             if not updated:
-                updated = 'False'
+                updated = "False"
             else:
-                updated = 'True' # default form value is 'on'
+                updated = "True" # default form value is 'on'
             try:
                 if not image:
                     return {"message": "Please provide image name"}, 500
