@@ -60,7 +60,7 @@ class Scheduler:
 
     def run(self):
         self.updated_status = False
-        logger.info(self.schedule)
+        # logger.info(self.schedule)
         for image, status in self.schedule.items():
                 #logger.info('updated: %s' % image)
                 old_timestamp = self.last_updated_images.get(image)

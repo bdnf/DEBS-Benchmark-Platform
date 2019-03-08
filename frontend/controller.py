@@ -43,13 +43,13 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 # --- constants ---
-DELTA = datetime.timedelta(minutes=15) # average waiting time initial
-CYCLE_TIME = datetime.timedelta(minutes=20)
+DELTA = datetime.timedelta(minutes=10) # average waiting time initial
+CYCLE_TIME = datetime.timedelta(minutes=10)
 UPDATE_TIME = datetime.datetime.utcnow()
 
 skip_columns = ['team_image_name']
-local_testing = True
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
+local_testing = False
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER").split(",")
 allowed_hosts = remote_manager
 # --- find scheduler ---
@@ -68,7 +68,7 @@ def update_waiting_time(seconds):
 def filter(row):
     # specify in @skip_columns which columns not to be shown
     new_row = {}
-    for k,v in row.items():
+    for k, v in row.items():
         if k in skip_columns:
             continue
         elif k == 'last_run':
@@ -76,7 +76,7 @@ def filter(row):
                 new_row[k] = datetime.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S')
         else:
             new_row[k] = v
-    #print("new row: ", new_row)
+    # print("new row: ", new_row)
     return new_row
 
 
@@ -154,9 +154,9 @@ def index():
     logging.debug("INDEX route requested by IP address: %s " % request.remote_addr)
 
     query, last_experiment_time, waiting_time = db.get_ranking()
-    logging.info("Query: %s, last_experiment_time: %s, wait: %s" % (query, last_experiment_time, waiting_time))
+    # logging.debug("Query: %s, last_experiment_time: %s, wait: %s" % (query, last_experiment_time, waiting_time))
     ranking, queue = generate_ranking_table(query, last_experiment_time, waiting_time)
-    logging.info("R: %s, Q: %s" % (ranking,queue))
+    # logging.debug("Rankng: %s, Queue: %s" % (ranking,queue))
     return render_template('table.html', post=ranking, team=queue)
 
 @app.route('/status_update', methods=['GET', 'POST'])
@@ -168,7 +168,7 @@ def status():
             return jsonify(team_status), 200
         if request.method == 'POST':
             data = request.json
-            for team,status in data.items():
+            for team, status in data.items():
                 team_status[team] = status
             return jsonify(team_status), 200
             # status = data.get(STATUS_FIELD)
