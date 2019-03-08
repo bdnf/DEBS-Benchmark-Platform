@@ -81,7 +81,7 @@ def filter(row):
 
 
 def generate_ranking_table(result, last_run, time_to_wait):
-    global DELTA, CYCLE_TIME
+    global DELTA, CYCLE_TIME, UPDATE_TIME
     ranking = {}
     queue = []
     time = 0
@@ -92,7 +92,7 @@ def generate_ranking_table(result, last_run, time_to_wait):
         last_run = datetime.datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S')
         time = last_run + DELTA + CYCLE_TIME
     else:
-        time = DELTA + CYCLE_TIME
+        time = UPDATE_TIME + DELTA + CYCLE_TIME
     marked_to_run = 0
     time_to_wait = 0
     for ix, row in enumerate(result):
