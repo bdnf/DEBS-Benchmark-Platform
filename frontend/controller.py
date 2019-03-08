@@ -40,7 +40,7 @@ logging.basicConfig(
                      logging.FileHandler("%s/%s" % (LOG_FOLDER_NAME, filename)),
                      logging.StreamHandler()
                     ])
-logger = logging.getLogger()
+#logger = logging.getLogger()
 
 # --- constants ---
 DELTA = datetime.timedelta(minutes=10) # average waiting time initial
