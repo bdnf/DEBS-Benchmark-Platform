@@ -89,16 +89,18 @@ def generate_ranking_table(result, last_run, time_to_wait):
     if last_run:
         last_run = datetime.datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S')
         time = last_run + DELTA + CYCLE_TIME
+    else:
+        time = DELTA + CYCLE_TIME
     marked_to_run = 0
     time_to_wait = 0
     for ix, row in enumerate(result):
-       #print("ROW: ", row)
+       print("ROW: ", row)
        ranking[ix+1] = filter(row)
        team_name = row.get('team_image_name', None)
        current_status = ""
        if team_name:
            current_status = team_status.get(team_name, "")
-       if row.get('updated', None)  == ("True" or True):
+       if row.get('updated', None)  == "True":
            if time:
                queue.append({row['name']: {
                "eta": unconvert_time(time + DELTA*(marked_to_run)),
