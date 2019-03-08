@@ -34,7 +34,7 @@ if not os.path.exists(LOG_FOLDER_NAME):
     os.makedirs(LOG_FOLDER_NAME)
 filename = 'controller.log'
 logging.basicConfig(
-                    level=logging.INFO,
+                    level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s',
                     handlers=[
                      logging.FileHandler("%s/%s" % (LOG_FOLDER_NAME, filename)),
@@ -55,7 +55,7 @@ allowed_hosts = remote_manager
 # --- find scheduler ---
 scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
 allowed_hosts.append(scheduler_ip)
-logging.info("Allowed hosts are: %s" % allowed_hosts)
+logging.debug("Allowed hosts are: %s" % allowed_hosts)
 
 team_status = {}
 # --- helper functions ---
