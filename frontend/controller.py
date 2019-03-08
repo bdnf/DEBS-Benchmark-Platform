@@ -162,14 +162,17 @@ def status():
             return jsonify(team_status), 200
         if request.method == 'POST':
             data = request.json
-            status = data.get(STATUS_FIELD)
-            team = data.get('team_image_name')
-            logging.info("got %s %s" % (team, status))
-            if team:
+            for team,status in data.items():
                 team_status[team] = status
-                return jsonify(team_status), 200
-            else:
-                return {"message":"Bad request"}, 400
+            return jsonify(team_status), 200
+            # status = data.get(STATUS_FIELD)
+            # team = data.get('team_image_name')
+            # logging.info("got %s %s" % (team, status))
+            # if team:
+            #     team_status[team] = status
+            #     return jsonify(team_status), 200
+            # else:
+            #     return {"message":"Bad request"}, 400
 
     else:
         logging.warning(" %s is NOT allowed to post schedule" % request.remote_addr)
