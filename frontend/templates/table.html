@@ -41,13 +41,15 @@
     <thead class="thead-dark">
     <th scope="col">Next in schedule</th>
     <th scope="col">Estimated time to run (UTC) </th>
+    <th scope="col">Status</th>
     </thead>
   </tr>
 {% for t in team %}
   {% for key, value in t.items() %}
   <tr>
     <td> {{ key}}</td>
-    <td>{{ value }}</td>
+    <td>{{ value.get('eta', "") }}</td>
+    <td>{{ value.get('status', "") }}</td>
   </tr>
   {% endfor %}
 {% endfor %}

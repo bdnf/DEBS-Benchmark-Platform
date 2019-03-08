@@ -19,7 +19,7 @@ logging.basicConfig(
                     level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s',
                     handlers=[
-                     logging.FileHandler("{0}/{1}".format(LOG_FOLDER_NAME, filename)),
+                     logging.FileHandler("%s/%s" % (LOG_FOLDER_NAME, filename)),
                      logging.StreamHandler()
                     ])
 logger = logging.getLogger()

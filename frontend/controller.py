@@ -29,15 +29,15 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_APP_KEY")
 jwt = JWTManager(app)
 # ------
 
-LOG_FOLDER_NAME = "controller_logs"
+LOG_FOLDER_NAME = "frontend_logs"
 if not os.path.exists(LOG_FOLDER_NAME):
     os.makedirs(LOG_FOLDER_NAME)
-filename='controller.log'
+filename = 'controller.log'
 logging.basicConfig(
                     level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s',
                     handlers=[
-                     logging.FileHandler("{0}/{1}".format(LOG_FOLDER_NAME, filename)),
+                     logging.FileHandler("%s/%s" % (LOG_FOLDER_NAME, filename)),
                      logging.StreamHandler()
                     ])
 logger = logging.getLogger()
@@ -55,6 +55,7 @@ scheduler_ip = find_container_ip_addr(os.getenv("SCHEDULER_IP"))
 allowed_hosts.append(scheduler_ip)
 logging.debug("Allowed hosts are: %s" % allowed_hosts)
 
+team_status = {}
 # --- helper functions ---
 def update_waiting_time(seconds):
     global DELTA
@@ -93,9 +94,16 @@ def generate_ranking_table(result, last_run, time_to_wait):
     for ix, row in enumerate(result):
        #print("ROW: ", row)
        ranking[ix+1] = filter(row)
+       team_name = row.get('team_image_name', None)
+       team_status = ""
+       if team_name:
+           team_status = team_status.get(team_name, "")
        if row.get('updated', None)  == "True":
            if time:
-               queue.append({row['name']: unconvert_time(time + DELTA*(marked_to_run))  })
+               queue.append({row['name']: {
+               "eta": unconvert_time(time + DELTA*(marked_to_run)),
+               "status": team_status
+               }})
                marked_to_run +=1
     sys.stdout.flush()
     #print(ranking)
@@ -115,6 +123,11 @@ def unconvert_time(s):
 def post_result():
     if (request.remote_addr in allowed_hosts) or local_testing:
         data = request.json
+        team = data.get('team_image_name')
+        team_in_schedule = team_status.get(team, None)
+        if team_in_schedule:
+            team_status[team_in_schedule] = ""
+            
         logging.info("received new result: %s" % data)
         sys.stdout.flush()
         accuracy = data.get('accuracy')
@@ -139,6 +152,26 @@ def index():
     query, last_experiment_time, waiting_time = db.get_ranking()
     ranking, queue = generate_ranking_table(query, last_experiment_time, waiting_time)
     return render_template('table.html', post=ranking, team=queue)
+
+@app.route('/status_update', methods=['GET', 'POST'])
+def status():
+    STATUS_FIELD = 'status_update'
+    if (request.remote_addr in allowed_hosts) or local_testing:
+        if request.method == 'GET':
+            pass
+        if request.method == 'GET':
+            data = request.json
+            status = data.get(STATUS_FIELD,"")
+            team = data.get('team_image_name')
+            if team:
+                team_status[team] = status
+            else:
+                return {"message":"Bad request"}, 400
+
+            return {"message":"Status updated"}, 200
+    else:
+        logging.warning(" %s is NOT allowed to post schedule" % request.remote_addr)
+        return abort(403)
 
 
 @app.route('/add_team', methods=['GET', 'POST'])
