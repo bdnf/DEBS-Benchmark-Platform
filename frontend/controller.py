@@ -158,7 +158,8 @@ def status():
     STATUS_FIELD = 'status_update'
     if (request.remote_addr in allowed_hosts) or local_testing:
         if request.method == 'GET':
-            pass
+            # testing
+            return jsonify(team_status), 200
         if request.method == 'GET':
             data = request.json
             status = data.get(STATUS_FIELD,"")
