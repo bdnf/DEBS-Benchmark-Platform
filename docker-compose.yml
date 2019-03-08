@@ -28,8 +28,8 @@ services:
       - db
     links:
       - db
-    volumes:
-      - ./scheduler/scheduler_logs:/app2/scheduler_logs
+    #volumes:
+    #  - ./scheduler/scheduler_logs:/app/scheduler_logs
 
   frontend:
     container_name: frontend
@@ -45,6 +45,7 @@ services:
     ports:
       - 8080:8080
     volumes:
+      - ./scheduler/scheduler_logs:/app/scheduler_logs
       - ./frontend/frontend_logs:/app/frontend_logs
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
