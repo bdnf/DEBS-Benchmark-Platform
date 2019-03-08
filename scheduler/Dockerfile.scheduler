@@ -5,11 +5,13 @@ RUN apt-get update && apt-get install -y build-essential
 RUN apt-get update && apt-get install -y libtbb-dev
 
 RUN apt-get update && apt-get install -y \
-    python-pip
+    python3-pip
 
-RUN pip install --no-cache-dir requests dataset pymysql cryptography sqlalchemy
+RUN python3 -V
 
-COPY . /app2
-WORKDIR /app2
+RUN pip3 install --no-cache-dir requests dataset pymysql cryptography sqlalchemy
 
-CMD ["python", "scheduler.py"]
+COPY . /app
+WORKDIR /app
+
+CMD ["python3", "scheduler.py"]
