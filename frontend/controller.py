@@ -160,7 +160,7 @@ def status():
         if request.method == 'GET':
             # testing
             return jsonify(team_status), 200
-        if request.method == 'GET':
+        if request.method == 'POST':
             data = request.json
             status = data.get(STATUS_FIELD,"")
             team = data.get('team_image_name')
