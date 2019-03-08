@@ -33,14 +33,19 @@ LOG_FOLDER_NAME = "frontend_logs"
 if not os.path.exists(LOG_FOLDER_NAME):
     os.makedirs(LOG_FOLDER_NAME)
 filename = 'controller.log'
+logger = logging.getLogger()
 logging.basicConfig(
                     level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s',
                     handlers=[
                      logging.FileHandler("%s/%s" % (LOG_FOLDER_NAME, filename)),
-                     logging.StreamHandler()
+                     #logging.StreamHandler()
                     ])
-#logger = logging.getLogger()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s')
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
 
 # --- constants ---
 DELTA = datetime.timedelta(minutes=10) # average waiting time initial
