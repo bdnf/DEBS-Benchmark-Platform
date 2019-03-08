@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip install --no-cache-dir requests dataset pymysql cryptography sqlalchemy
 
-COPY . /app
-WORKDIR /app
+COPY . /app2
+WORKDIR /app2
 
 CMD ["python", "scheduler.py"]

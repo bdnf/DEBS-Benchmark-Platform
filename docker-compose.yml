@@ -29,7 +29,7 @@ services:
     links:
       - db
     volumes:
-      - ./scheduler/scheduler_logs:/app/scheduler_logs
+      - ./scheduler/scheduler_logs:/app2/scheduler_logs
 
   frontend:
     container_name: frontend
