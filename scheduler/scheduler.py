@@ -26,7 +26,7 @@ logger = logging.getLogger()
 
 endpoint = os.getenv("FRONTEND_SERVER")
 if endpoint is None:
-    logger.error("please specify front-end server address!")
+    logging.error("please specify front-end server address!")
     #exit(1)
     #endpoint = HOST + PATH
 else:
@@ -42,9 +42,9 @@ class Scheduler:
         try:
             self.schedule, _ = self.reguest_all_images()
         except requests.exceptions.ConnectionError as e:
-            logger.error("Make sure that server you are trying to connect is up. %s" % e)
-            logger.error("Please restart Scheduler when the frontend server is up!")
-            logger.error("Hint! You can use 'docker restart scheduler' command.")
+            logging.error("Make sure that server you are trying to connect is up. %s" % e)
+            logging.error("Please restart Scheduler when the frontend server is up!")
+            logging.error("Hint! You can use 'docker restart scheduler' command.")
             exit(1)
         self.last_updated_images = {} #snapshot
         self.crawler = DockerCrawler()
@@ -53,34 +53,34 @@ class Scheduler:
     # then contains in memory shapshot of all teams and last image runs
     def reguest_all_images(self):
         response = requests.get(endpoint)
-        logger.info(response.status_code)
+        logging.info(response.status_code)
         schedule = response.json()
-        logger.info("Requested image list is: %s " % schedule)
+        logging.info("Requested image list is: %s " % schedule)
         return schedule, response.status_code
 
     def run(self):
         self.updated_status = False
-        # logger.info(self.schedule)
+        # logging.info(self.schedule)
         for image, status in self.schedule.items():
-                #logger.info('updated: %s' % image)
+                #logging.info('updated: %s' % image)
                 old_timestamp = self.last_updated_images.get(image)
                 new_timestamp = self.crawler.run(image)
                 if old_timestamp == new_timestamp:
-                    logger.debug('same: %s' % image)
+                    logging.debug('same: %s' % image)
                     # self.updated_status = False
                     if self.schedule.get(image) != 'old' and not None:
                         self.schedule[image] = 'old'
                 elif old_timestamp is None and status == 'old':
                     # do nothing, only save timestamp as current one
-                    logger.info("all images are same")
+                    logging.info("all images are same")
                     self.last_updated_images[image] = new_timestamp
                     self.updated_status = True
                 else:
-                    logger.info('New tag for image %s detected at %s' % (image, new_timestamp))
+                    logging.info('New tag for image %s detected at %s' % (image, new_timestamp))
                     self.last_updated_images[image] = new_timestamp
                     self.updated_status = True
                     self.schedule[image] = 'updated'
-        logger.info("all teams checked")
+        logging.info("all teams checked")
 
 
 def send_schedule(payload):
@@ -88,24 +88,24 @@ def send_schedule(payload):
     try:
         response = requests.post(endpoint, json = payload, headers=headers)
 
-        logger.info('Response status is: %s' % response.status_code)
+        logging.info('Response status is: %s' % response.status_code)
         if (response.status_code == 201):
             return {'status': 'success', 'message': 'updated'}
         if (response.status_code == 404):
             return {'message': 'Something went wrong. No scene exist. Check if the path is correct'}
     except requests.exceptions.ConnectionError as e:
-        logger.error("please specify front-end server address! %s" % e)
+        logging.error("please specify front-end server address! %s" % e)
         exit(1)
     return response.status_code
 
 
 if __name__ == '__main__':
-    logger.info("Waiting for DB server to start")
+    logging.info("Waiting for DB server to start")
     logging.info("Waiting for the backend server to start")
     backoff = int(os.getenv("SCHEDULER_STARTUP_BACKOFF", default=30))
     frontend_backoff = int(os.getenv("FRONTEND_STARTUP_BACKOFF", default=0))
     if backoff <= frontend_backoff:
-        logger.debug("Sheduler should start after the frontend server. Adding small backoff")
+        logging.debug("Sheduler should start after the frontend server. Adding small backoff")
         backoff = frontend_backoff + 15
     time.sleep(backoff)
 
@@ -127,11 +127,11 @@ if __name__ == '__main__':
             # wait_seconds = wait_lower_bound
 
         if updated_images:
-            logger.info("Scheduler sends updated images: " % updated_images)
+            logging.info("Scheduler sends updated images: " % updated_images)
             send_schedule(updated_images)
             scheduler.updated_status = False
         else:
-            logger.info("Images weren't updated yet. Idling...")
+            logging.info("Images weren't updated yet. Idling...")
             # wait_seconds += 10
             # if wait_seconds > wait_upper_bound:
             #     wait_seconds = wait_lower_bound

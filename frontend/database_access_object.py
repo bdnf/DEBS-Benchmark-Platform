@@ -104,7 +104,7 @@ class Database:
                     try:
                         docker_hub_link = t['team_image_name'].split('/')
                         if t['updated'] == 'True':
-                            print("Updated entry? ", t)
+                            # print("Found updated entry: ", t)
                             # images.append(str(t['team_image_name']))
                             images[t['team_image_name']] = 'updated'
                         else:

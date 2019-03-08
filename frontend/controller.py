@@ -96,17 +96,17 @@ def generate_ranking_table(result, last_run, time_to_wait):
     marked_to_run = 0
     time_to_wait = 0
     for ix, row in enumerate(result):
-       print("ROW: ", row)
-       ranking[ix+1] = filter(row)
-       team_name = row.get('team_image_name', None)
-       current_status = ""
-       if team_name:
-           current_status = team_status.get(team_name, "")
-       if row.get('updated', None)  == "True":
-           if time:
+        # print("ROW: ", row)
+        ranking[ix+1] = filter(row)
+        team_name = row.get('team_image_name', None)
+        current_status = ""
+        if team_name:
+            current_status = team_status.get(team_name, "")
+        if row.get('updated', None)  == "True":
+            if time:
                queue.append({row['name']: {
-               "eta": unconvert_time(time + DELTA*(marked_to_run)),
-               "status": current_status
+                    "eta": unconvert_time(time + DELTA*(marked_to_run)),
+                    "status": current_status
                }})
                marked_to_run +=1
     sys.stdout.flush()
@@ -276,7 +276,7 @@ def get_teams():
     if (request.remote_addr in allowed_hosts) or local_testing:
         sys.stdout.flush()
         images = db.find_images()
-        logging.info("sending schedule: %s" % images)
+        logging.info("sending schedule %s to component: %s" % (images, request.remote_addr))
         return json.dumps(images)
     else:
         logging.warning(" %s is NOT allowed to request schedule" % request.remote_addr)
