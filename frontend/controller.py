@@ -95,14 +95,14 @@ def generate_ranking_table(result, last_run, time_to_wait):
        #print("ROW: ", row)
        ranking[ix+1] = filter(row)
        team_name = row.get('team_image_name', None)
-       team_status = ""
+       current_status = ""
        if team_name:
-           team_status = team_status.get(team_name, "")
+           current_status = team_status.get(team_name, "")
        if row.get('updated', None)  == "True":
            if time:
                queue.append({row['name']: {
                "eta": unconvert_time(time + DELTA*(marked_to_run)),
-               "status": team_status
+               "status": current_status
                }})
                marked_to_run +=1
     sys.stdout.flush()
@@ -127,7 +127,7 @@ def post_result():
         team_in_schedule = team_status.get(team, None)
         if team_in_schedule:
             team_status[team_in_schedule] = ""
-            
+
         logging.info("received new result: %s" % data)
         sys.stdout.flush()
         accuracy = data.get('accuracy')
