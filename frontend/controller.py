@@ -45,6 +45,8 @@ logger = logging.getLogger()
 # --- constants ---
 DELTA = datetime.timedelta(minutes=15) # average waiting time initial
 CYCLE_TIME = datetime.timedelta(minutes=20)
+UPDATE_TIME = datetime.datetime.utcnow()
+
 skip_columns = ['team_image_name']
 local_testing = True
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
@@ -186,6 +188,7 @@ def status():
 @app.route('/add_team', methods=['GET', 'POST'])
 #@jwt_required
 def add_teams():
+    global UPDATE_TIME
     # print(request.json)
     if session.get('access_token'):
         current_user = get_jwt_identity()
@@ -213,6 +216,7 @@ def add_teams():
             #session['access_token'] = ""
             db.add_team(team, image, updated)
             logging.info("Added team %s with image %s and status: %s" % (team, image, updated))
+            UPDATE_TIME = datetime.datetime.utcnow()
             #response.json = jsonify({"Updated": {team:image +" "+ str(updated)}})
             return render_template('success.html'), 200
     else:
