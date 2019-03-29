@@ -16,11 +16,7 @@ from flask_jwt_extended import (
 
 from security import authenticate, find_container_ip_addr
 from database_access_object import Database
-'''
-    For local testing set:
-        @local_testing = True
-    or add your host to @allowed_hosts
-'''
+
 # --- APP ---
 app = Flask(__name__)
 # app.secret_key = 'super-secret'
@@ -54,7 +50,6 @@ UPDATE_TIME = datetime.datetime.utcnow()
 
 skip_columns = ['team_image_name']
 # --- Allowed HOSTS (scheduler container will be detected at runtime)
-local_testing = False
 remote_manager = os.getenv("REMOTE_MANAGER_SERVER").split(",")
 allowed_hosts = remote_manager
 # --- find scheduler ---
@@ -95,6 +90,8 @@ def generate_ranking_table(result, last_run, time_to_wait):
         return ranking, queue
     if last_run:
         last_run = datetime.datetime.strptime(last_run, '%Y-%m-%dT%H:%M:%S')
+        last_run = max(last_run, UPDATE_TIME)
+        print("Max date is %s" % last_run)
         time = last_run + DELTA + CYCLE_TIME
     else:
         time = UPDATE_TIME + DELTA + CYCLE_TIME
@@ -130,7 +127,7 @@ def unconvert_time(s):
 # --- ROUTES ----
 @app.route('/result', methods=['POST'])
 def post_result():
-    if (request.remote_addr in allowed_hosts) or local_testing:
+    if (request.remote_addr in allowed_hosts) or request.remote_addr.startswith( '172', 0, 4 ):
         data = request.json
         team = data.get('team_image_name')
         team_in_schedule = team_status.get(team, None)
@@ -167,7 +164,7 @@ def index():
 @app.route('/status_update', methods=['GET', 'POST'])
 def status():
     STATUS_FIELD = 'status_update'
-    if (request.remote_addr in allowed_hosts) or local_testing:
+    if (request.remote_addr in allowed_hosts) or request.remote_addr.startswith( '172', 0, 4):
         if request.method == 'GET':
             # testing
             return jsonify(team_status), 200
@@ -257,7 +254,7 @@ def login():
 @app.route('/schedule', methods=['POST'])
 def post_schedule():
 
-    if (request.remote_addr in allowed_hosts) or local_testing:
+    if (request.remote_addr in allowed_hosts) or request.remote_addr.startswith( '172', 0, 4 ):
         logging.debug(" %s is allowed to post schedule" % request.remote_addr)
         data = request.json
         logging.info("Received updated schedule")
@@ -278,7 +275,7 @@ def post_schedule():
 def get_teams():
     # logging.info("IP address: %s " % request.remote_addr)
     # sys.stdout.flush()
-    if (request.remote_addr in allowed_hosts) or local_testing:
+    if (request.remote_addr in allowed_hosts) or request.remote_addr.startswith( '172', 0, 4 ):
         sys.stdout.flush()
         images = db.find_images()
         logging.info("sending schedule %s to component: %s" % (images, request.remote_addr))
